@@ -1,0 +1,244 @@
+#————————————————————————————————DO NOT REMOVE THIS SECTION————————————————————————————————#
+# MADE BY: BANDITEAGLE
+# DISCORD: BanditEagle#2481
+# MINEHUT FORUMS PROFILE: https://forums.minehut.com/profile/276950-banditeagle/
+# SPIGOT PROFILE: https://www.spigotmc.org/members/banditeagle.935281/
+# You are allowed to share this skript, but please mention that this is made by me.
+# Staff Usages Skript v1.0
+#————————————————————————————————DO NOT REMOVE THIS SECTION————————————————————————————————#
+
+#————————————————————————————————OPTIONS————————————————————————————————#
+
+options:
+  #SECTION: RELOAD SKRIPTS
+  reloadAlert: true #set to false if you don't want to advertise reloads
+  reloadedMsg: "&bThe skript &2<skript>.sk &bhas been reloaded in &a<reloadtime>!" #Do not change <skript> or <reloadtime> as those are needed. Rest can be changed to your liking.
+  reloadingMsg: "&bThe skript &2<skript>.sk &bis being reloaded. &c&lThis may cause lag, please be patient." #Do not change <skript> as it's needed. Rest can be changed to your liking.
+
+  #SECTION: BROADCASTING JOIN/LEAVE STATUS
+  staffstatus: true #set to false if you don't want to broadcast staff join/leaves
+  donatorstatus: true #set to false if you don't want to broadcast donator join/leaves
+  memberstatus: true #set to false if you don't want to broadcast member join/leaves
+  firstjoinstatus: true #set to false if you don't want to broadcast new joins
+
+#————————————————————————————————OPTIONS————————————————————————————————#
+
+#————————————————————————————————ON 'X'————————————————————————————————#
+
+#SECTION: RELOADING SKRIPT
+on load:
+  if {@reloadAlert} is true:
+    set {loading} to true
+    set {_msg} to {@reloadedMsg}
+    if {reloadTime} is not set:
+      set {reloadTime} to now
+
+    ReloadSkript({_msg})
+    delete {reloadTime}
+
+#SECTION: RELOADING SKRIPT
+on unload:
+  if {@reloadAlert} is true:
+    set {reloadTime} to now
+    set {loading} to false
+    set {_msg} to {@reloadingMsg}
+    ReloadSkript({_msg})
+
+#SECTION: BROADCAST IF NEW PLAYER
+on first join:
+  set {firstJoin::%uuid of player%} to true
+  {@firstjoinstatus} is true
+  set {_msg} to "&7[&aNew Join&7] &a%player% &2has joined the server!"
+  BroadcastAll({_msg})
+
+#SECTION: CHECKING PLAYER'S STATUS AND BROADCASTING FOR JOINS
+on join:
+  if {firstJoin::%uuid of player%} is true:
+    delete {firstJoin::%uuid of player%}
+    stop
+
+  else:
+    if player has permission "staff.status":
+      #SECTION: BROADCAST IF STAFF IS NOT HIDDEN
+      {@staffstatus} is true
+      if {hideStatus::%uuid of player%} is false:
+        set {_msg} to "&7[&2&l&nStaff Join&7] &a%player% &2has joined the server!"
+        BroadcastAll({_msg})
+
+      else if {hideStatus::%uuid of player%} is true:
+        wait 1 tick
+        make player execute command "/vanish"
+
+    #SECTION: BROADCAST IF DONATOR
+    else if player has permission "donator.status":
+      {@donatorstatus} is true
+      set {_msg} to "&7[&2&lDonator Join&7] &a%player% &2has joined the server!"
+      BroadcastAll({_msg})
+
+    #SECTION: BROADCAST IF MEMBER
+    else:
+      {@memberstatus} is true
+      set {_msg} to "&7[&2Join&7] &a%player% &2has joined the server!"
+      BroadcastAll({_msg})
+
+    stop
+
+#SECTION: CHECKING PLAYER'S STATUS AND BROADCASTING FOR LEAVES
+on quit:
+  #SECTION: BROADCAST IF STAFF IS NOT HIDDEN
+  if player has permission "staff.status":
+    {@staffstatus} is true
+    if {hideStatus::%uuid of player%} is false:
+      set {_msg} to "&7[&2&l&nStaff Leave&7] &a%player% &2has left the server!"
+      BroadcastAll({_msg})
+
+  #SECTION: BROADCAST IF DONATOR
+  else if player has permission "donator.status":
+    {@donatorstatus} is true
+    set {_msg} to "&7[&2&lDonator Leave&7] &a%player% &2has left the server!"
+    BroadcastAll({_msg})
+
+  #SECTION: BROADCAST IF MEMBER
+  else:
+    {@memberstatus} is true
+    set {_msg} to "&7[&2Leave&7] &a%player% &2has left the server!"
+    BroadcastAll({_msg})
+
+  stop
+
+#SECTION: STAFFCHAT [CHAT]
+on chat:
+  if player has permission "staff.chat":
+    set {_m} to uncolored message
+    if {_m} starts with "##":
+      replace first "##" in {_msg} with ""
+      StaffChat({_msg})
+
+#————————————————————————————————ON 'X'————————————————————————————————#
+
+#————————————————————————————————FUNCTIONS————————————————————————————————#
+
+#SECTION: RELOADING SKRIPT
+function ReloadSkript(msg: text):
+  if {loading} is true:
+    replace "<skript>" in {_msg} with script
+    replace "<reloadtime>" in {_msg} with "%difference between {reloadTime} and now%"
+    send "%{_msg}%" to all players
+
+  else:
+    replace "<skript>" in {_msg} with script
+    send "%{_msg}%" to all players
+
+#SECTION: BROADCASTING
+function BroadcastAll(m: text):
+  set {_prefix} to {@prefix}
+  set {_msg} to "%{_prefix}% %{_msg}%"
+  send "%{_msg}%" to all players
+
+#SECTION: STAFFCHAT [FUNCTION]
+function StaffChat(msg: text):
+  send "&7[&2Staff Chat&7] &f%uncolored loop-player's displayname% &2| &f%{_msg}%" to players where [input has permission "staff.chat"]
+
+#————————————————————————————————FUNCTIONS————————————————————————————————#
+
+#————————————————————————————————COMMANDS————————————————————————————————#
+
+#SECTION: STAFF HIDESTATUS
+command /hidestatus [<text>]:
+  permission: staff.hideStatus
+  trigger:
+    if arg-1 is not set:
+      make player execute command "/hidestatus help"
+
+    #SECTION: BROADCAST STATUS
+    else if arg-1 is "off":
+      set {hideStatus::%uuid of player%} to false
+      send "&7[&2HideStatus&7] &2-- &aEveryone will be able to see your join & leave messages now. Beware."
+
+    #SECTION: HIDE YOUR STATUS
+    else if arg-1 is "on":
+      set {hideStatus::%uuid of player%} to true
+      send "&7[&2HideStatus&7] &2-- &aWhen you leave or join players won't see this."
+
+    #SECTION: AUTHOR
+    else if arg-1 is "author":
+      send " "
+      send "&2&l&nThis skript was developed by:&a BanditEagle."
+      send " "
+      send "&bDiscord: &aBanditEagle##2481"
+      send "&bMinehut Forums: &aBanditEagle"
+      send " "
+      send "&2Add me for questions, requests, or just chatting!"
+      send " "
+
+    #SECTION: HELP
+    else if arg-1 is "help":
+      send ""
+      send "&2&lWhat it does:"
+      send "&7[&2HideStatus&7] &2-- &aTurning this on will hide you when you join or leave, and will put you into vanish when you join."
+      send "&7[&2HideStatus&7] &2-- &aTurning this off will broadcast you joining or leaving the server."
+      send ""
+      send "&2&lHow to use it:"
+      send "&2/hidestatus &con &2-- &cTurn it on"
+      send "&2/hidestatus &coff &2-- &cTurn it off"
+      send "&2/hidestatus &chelp &2-- &cSee how to use the command"
+      send "&2/hidestatus &cauthor &2-- &cSee who created this."
+      send ""
+    
+    stop
+
+#SECTION: STAFF FAKE JOIN/LEAVE
+command /fakestatus [<text>]:
+  permission: staff.fakeStatus
+  trigger:
+    if arg-1 is not set:
+      make player execute command "/fakestatus help"
+
+    #SECTION: FAKE LEAVE
+    else if arg-1 is "leave":
+      set {_msg} to "&7[&2Staff Leave&7] &a%player% &2has left the server!"
+      BroadcastAll({_msg})
+
+    #SECTION: FAKE JOIN
+    else if arg-1 is "join":
+      set {_msg} to "&7[&2Staff Join&7] &a%player% &2has joined the server!"
+      BroadcastAll({_msg})
+
+    #SECTION: AUTHOR
+    else if arg-1 is "author":
+      send " "
+      send "&2&l&nThis skript was developed by:&a BanditEagle."
+      send " "
+      send "&bDiscord: &aBanditEagle##2481"
+      send "&bMinehut Forums: &aBanditEagle"
+      send " "
+      send "&2Add me for questions, requests, or just chatting!"
+      send " "
+
+    #SECTION: HELP
+    else if arg-1 is "help":
+      send ""
+      send "&2&lHow to use it:"
+      send "&2/fakestatus &cjoin &2-- &cSend a fake broadcast of your join"
+      send "&2/fakestatus &cleave &2-- &cSend a fake broadcast of your leave"
+      send "&2/fakestatus &chelp &2-- &cSee how to use the command"
+      send "&2/fakestatus &cauthor &2-- &cSee who created this"
+      send ""
+    
+    stop
+
+#SECTION: STAFFCHAT [COMMAND]
+command /staffchat [<text>]:
+  aliases: /sc
+  permission: staff.chat
+  trigger:
+    if arg-1 is not set:
+      send "&cError: incorrect command usage."
+
+    else:
+      set {_msg} to uncolored arg-1
+      StaffChat({_msg})
+    
+    stop
+
+#————————————————————————————————COMMANDS————————————————————————————————#
