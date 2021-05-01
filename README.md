@@ -1,9 +1,9 @@
 # Staff-Utilities
-The Github for the Staff Utilities Skript!
+**The Github for the Staff Utilities Skript!**
 
 This skript is a very useful skript which has extremely clearly divided sections and explains what part works for which section!
 
-The skript includes features such as:
+**The skript includes features such as:**
 - Reloading skript broadcast
 - Join/leave for new joins, members, donators, and staff
 - Staff chat
@@ -19,4 +19,5 @@ https://www.spigotmc.org/resources/staff-utilities.91861/
 
 If you have any ideas or suggestions for this, please let me know! And feel free to contact me if you have any questions! I will try my best to answer all of them!
 
-#Please keep in mind that you are allowed to share this skript with anyone you like, however please make sure to tell them who the creator of the skript is! Also, please do not sell this skript to anyone at any point as this is a completely free skript. Those are the only rules I have for this! Otherwise, do whatever you please with it!
+**Please keep in mind that you are allowed to share this skript with anyone you like, however please make sure to tell them who the creator of the skript is! Also, please do not sell this skript to anyone at any point as this is a completely free skript. Those are the only rules I have for this! Otherwise, do whatever you please with it!
+**
