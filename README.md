@@ -11,9 +11,8 @@ This skript is a very useful skript which has extremely clearly divided sections
 - Hide join/leave broadcasts for staff [if true, you will automatically be vanished on join, if you have Essentials]
 - Allowing setting specific broadcasts to false (including reloading skript, staff join/leave, donator join/leave, member join/leave, and first join)
 
-I am planning on adding some more features, which can be found on the trello or the projects!
-Trello: https://trello.com/b/vrAmgg8q/updating-the-skript
-Projects: https://github.com/BanditEagle/Staff-Utilities/projects/1
+I am planning on adding some more features, which can be found on the projects!
+https://github.com/BanditEagle/Staff-Utilities/projects/1
 
 If you have any ideas or suggestions for this, please let me know! And feel free to contact me if you have any questions! I will try my best to answer all of them!
 
